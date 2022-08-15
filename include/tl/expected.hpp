@@ -1251,6 +1251,7 @@ public:
   typedef E error_type;
   typedef unexpected<E> unexpected_type;
 
+#ifndef TL_EXPECTED_NO_EXT
 #if defined(TL_EXPECTED_CXX14) && !defined(TL_EXPECTED_GCC49) &&               \
     !defined(TL_EXPECTED_GCC54) && !defined(TL_EXPECTED_GCC55)
   template <class F> TL_EXPECTED_11_CONSTEXPR auto and_then(F &&f) & {
@@ -1442,6 +1443,7 @@ public:
   template <class F> expected constexpr or_else(F &&f) const && {
     return or_else_impl(std::move(*this), std::forward<F>(f));
   }
+#endif
 #endif
   constexpr expected() = default;
   constexpr expected(const expected &rhs) = default;
@@ -1942,6 +1944,7 @@ template <class Exp> using exp_t = typename detail::decay_t<Exp>::value_type;
 template <class Exp> using err_t = typename detail::decay_t<Exp>::error_type;
 template <class Exp, class Ret> using ret_t = expected<Ret, err_t<Exp>>;
 
+#ifndef TL_EXPECTED_NO_EXT
 #ifdef TL_EXPECTED_CXX14
 template <class Exp, class F,
           detail::enable_if_t<!std::is_void<exp_t<Exp>>::value> * = nullptr,
@@ -2259,6 +2262,7 @@ detail::decay_t<Exp> or_else_impl(Exp &&exp, F &&f) {
          : (detail::invoke(std::forward<F>(f), std::forward<Exp>(exp).error()),
             std::forward<Exp>(exp));
 }
+#endif
 #endif
 } // namespace detail
 

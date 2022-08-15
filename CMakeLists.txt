@@ -17,6 +17,12 @@ endif()
 
 option(EXPECTED_BUILD_PACKAGE "Build package files as well" ON)
 
+option(EXPECTED_NO_EXT "Build with extensions disabled" OFF)
+
+if (EXPECTED_NO_EXT)
+    add_definitions(-DTL_EXPECTED_NO_EXT)
+endif()
+
 cmake_dependent_option(EXPECTED_BUILD_TESTS
   "Enable tl::expected tests" ON
   "BUILD_TESTING" OFF)
@@ -73,6 +79,11 @@ if(EXPECTED_BUILD_TESTS)
 
   file(GLOB test-sources CONFIGURE_DEPENDS tests/*.cpp)
   list(FILTER test-sources EXCLUDE REGEX "tests/test.cpp")
+
+  if (EXPECTED_NO_EXT)
+    list(FILTER test-sources EXCLUDE REGEX "tests/extensions.cpp")
+  endif()
+
   add_executable(${PROJECT_NAME}-tests "${test-sources}")
   target_compile_options(${PROJECT_NAME}-tests PRIVATE
     $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra>)

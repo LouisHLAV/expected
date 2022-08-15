@@ -5,6 +5,7 @@
 
 using std::string;
 
+#ifndef TL_EXPECTED_NO_EXT
 tl::expected<int, string> getInt3(int val) { return val; }
 
 tl::expected<int, string> getInt2(int val) { return val; }
@@ -22,6 +23,7 @@ TEST_CASE("Issue 17", "[issues.17]") {
 
   intermediate_result.and_then(operation2);
 }
+#endif
 
 struct a {};
 struct b : a {};
@@ -53,6 +55,7 @@ TEST_CASE("Issue 29", "[issues.29]") {
   REQUIRE(ov->size() == 1);
 }
 
+#ifndef TL_EXPECTED_NO_EXT
 tl::expected<int, std::string> error() {
   return tl::make_unexpected(std::string("error1 "));
 }
@@ -61,6 +64,7 @@ std::string maperror(std::string s) { return s + "maperror "; }
 TEST_CASE("Issue 30", "[issues.30]") {
   error().map_error(maperror);
 }
+#endif
 
 struct i31{
   int i;
@@ -74,14 +78,17 @@ TEST_CASE("Issue 31", "[issues.31]") {
     result2 = result;
 }
 
+#ifndef TL_EXPECTED_NO_EXT
 TEST_CASE("Issue 33", "[issues.33]") {
     tl::expected<void, int> res {tl::unexpect, 0};
     REQUIRE(!res);    
     res = res.map_error([](int i) { return 42; });
     REQUIRE(res.error() == 42);
 }
+#endif
 
 
+#ifndef TL_EXPECTED_NO_EXT
 tl::expected<void, std::string> voidWork() { return {}; }
 tl::expected<int, std::string> work2() { return 42; }
 void errorhandling(std::string){}
@@ -91,7 +98,9 @@ TEST_CASE("Issue 34", "[issues.34]") {
       .and_then (work2);
   result.map_error ([&] (std::string result) {errorhandling (result);});
 }
+#endif
 
+#ifndef TL_EXPECTED_NO_EXT
 struct non_copyable {
 	non_copyable(non_copyable&&) = default;
 	non_copyable(non_copyable const&) = delete;
@@ -101,12 +110,14 @@ struct non_copyable {
 TEST_CASE("Issue 42", "[issues.42]") {
 	tl::expected<non_copyable,int>{}.map([](non_copyable) {});
 }
+#endif
 
 TEST_CASE("Issue 43", "[issues.43]") {
 	auto result = tl::expected<void, std::string>{};
 	result = tl::make_unexpected(std::string{ "foo" });
 }
 
+#ifndef TL_EXPECTED_NO_EXT
 #if !(__GNUC__ <= 5)
 #include <memory>
 
@@ -126,6 +137,7 @@ TEST_CASE("Issue 49", "[issues.49]") {
   auto m = test(10)
     .and_then(test2);
 }
+#endif
 #endif
 
 tl::expected<int, std::unique_ptr<std::string>> func()
